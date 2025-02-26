@@ -1,0 +1,17 @@
+
+{
+  "expo": {
+    "name": "endless-reader",
+    "plugins": [
+      "expo-audio",
+      "expo-video",
+      "expo-speech",
+      "expo-speech-recognition",
+      "expo-constants",
+      "expo-router",
+      "expo-linking",
+      "expo-splash-screen",
+      "expo-status-bar"
+    ]
+  }
+}
