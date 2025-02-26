@@ -1,0 +1,1 @@
+// Displays a word with swipe functionality

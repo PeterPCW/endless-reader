@@ -1,0 +1,1 @@
+// Shows the word player needs to pronounce

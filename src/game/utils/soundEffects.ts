@@ -1,0 +1,1 @@
+// Manages game sound effects and background music

@@ -1,0 +1,1 @@
+// Handles pause, reset, and exit buttons
