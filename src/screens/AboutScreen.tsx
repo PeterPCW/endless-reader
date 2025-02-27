@@ -1,1 +1,0 @@
-// Game information, credits, and learning methodology

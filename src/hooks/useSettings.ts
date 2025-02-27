@@ -1,1 +1,0 @@
-// Handles dynamic settings updates

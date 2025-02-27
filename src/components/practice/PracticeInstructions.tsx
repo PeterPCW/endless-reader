@@ -1,1 +1,0 @@
-// UI instructions for the practice stage

@@ -1,1 +1,0 @@
-// Plays background music, pronunciation sounds, and effects

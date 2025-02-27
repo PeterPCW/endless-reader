@@ -1,1 +1,0 @@
-// Reward video playback screen

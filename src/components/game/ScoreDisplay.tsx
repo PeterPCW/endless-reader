@@ -1,1 +1,0 @@
-// Displays real-time score during gameplay as a filled progress meter

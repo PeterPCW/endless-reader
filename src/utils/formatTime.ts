@@ -1,1 +1,0 @@
-// Converts milliseconds into readable time format

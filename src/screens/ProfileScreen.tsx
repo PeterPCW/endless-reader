@@ -1,1 +1,0 @@
-// Displays user profile, progress, and achievements

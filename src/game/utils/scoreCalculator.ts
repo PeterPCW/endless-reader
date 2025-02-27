@@ -1,1 +1,0 @@
-// Determines score logic based on correct speech inputs

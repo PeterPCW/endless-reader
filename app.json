@@ -1,17 +1,22 @@
-
 {
   "expo": {
     "name": "endless-reader",
-    "plugins": [
-      "expo-audio",
-      "expo-video",
-      "expo-speech",
-      "expo-speech-recognition",
-      "expo-constants",
-      "expo-router",
-      "expo-linking",
-      "expo-splash-screen",
-      "expo-status-bar"
-    ]
+    "slug": "endless-reader",
+    "entryPoint": "expo-router/entry",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./generated-icon.png",
+    "scheme": "endlessreader",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.peterorjustp.endlessreader"
+    },
+    "android": {
+      "package": "com.peterorjustp.endlessreader"
+    }
   }
 }

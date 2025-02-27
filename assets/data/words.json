@@ -1,0 +1,40 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "name": "Basic Words",
+      "words": [
+        {
+          "id": "1",
+          "word": "cat",
+          "dots": 3,
+          "audioFile": "cat.mp3"
+        },
+        {
+          "id": "2",
+          "word": "dog",
+          "dots": 3,
+          "audioFile": "dog.mp3"
+        },
+        {
+          "id": "3",
+          "word": "run",
+          "dots": 3,
+          "audioFile": "run.mp3"
+        },
+        {
+          "id": "4",
+          "word": "jump",
+          "dots": 4,
+          "audioFile": "jump.mp3"
+        },
+        {
+          "id": "5",
+          "word": "play",
+          "dots": 4,
+          "audioFile": "play.mp3"
+        }
+      ]
+    }
+  ]
+}

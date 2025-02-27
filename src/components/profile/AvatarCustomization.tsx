@@ -1,1 +1,0 @@
-// Avatar selection and customization
