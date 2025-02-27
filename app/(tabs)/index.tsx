@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Canvas } from '../../client/src/components/game/Canvas';
 
 type WordType = {
   id: string;
@@ -26,6 +27,8 @@ export default function GameScreen() {
     total: 0,
   });
   const [words, setWords] = useState<GameWord[]>([]);
+  const [gameRunning, setGameRunning] = useState(false);
+  const { width, height } = Dimensions.get('window');
 
   useEffect(() => {
     console.log('GameScreen - Initializing');
@@ -37,7 +40,6 @@ export default function GameScreen() {
 
   const initializeGame = async () => {
     try {
-      // Load words from assets
       const levelData = require('../../assets/data/words.json');
       const gameWords: GameWord[] = levelData.levels[0].words.map(word => ({
         ...word,
@@ -45,7 +47,6 @@ export default function GameScreen() {
       }));
       setWords(gameWords);
       await loadScore();
-      loadNextWord();
     } catch (error) {
       console.error('GameScreen - Error initializing game:', error);
     }
@@ -75,13 +76,11 @@ export default function GameScreen() {
   };
 
   const loadNextWord = () => {
-    // Filter out completed words and get a random one
     const availableWords = words.filter(w => !w.completed);
     if (availableWords.length === 0) {
       setShowResults(true);
       return;
     }
-
     const randomIndex = Math.floor(Math.random() * availableWords.length);
     const word = availableWords[randomIndex];
     console.log('GameScreen - Loading next word:', word.word);
@@ -89,53 +88,27 @@ export default function GameScreen() {
     setFeedback(null);
   };
 
-  const handleWordPress = async () => {
-    if (!currentWord) return;
+  const handleGameStart = () => {
+    setGameRunning(true);
+    loadNextWord();
+  };
 
-    // Simulate correct answer for now - will be replaced with actual logic
-    const isCorrect = Math.random() > 0.3; // 70% chance of correct for testing
-    if (isCorrect) {
-      const newScore = score + 1;
-      const newStreak = streak + 1;
-      setScore(newScore);
-      setStreak(newStreak);
-      await saveScore(newScore);
-      setFeedback('correct');
-      setGameStats(prev => ({
-        correct: prev.correct + 1,
-        total: prev.total + 1,
-      }));
+  const handleCollision = () => {
+    setGameRunning(false);
+    setFeedback('incorrect');
+    shakeAnimation();
+    setTimeout(() => {
+      setShowResults(true);
+    }, 1000);
+  };
 
-      // Mark word as completed
-      setWords(prev =>
-        prev.map(w =>
-          w.id === currentWord.id ? { ...w, completed: true } : w
-        )
-      );
-
-      console.log('GameScreen - Correct answer:', {
-        word: currentWord.word,
-        newScore,
-        newStreak,
-        remainingWords: words.filter(w => !w.completed).length
-      });
-    } else {
-      shakeAnimation();
-      setStreak(0);
-      setFeedback('incorrect');
-      setGameStats(prev => ({
-        ...prev,
-        total: prev.total + 1,
-      }));
-      console.log('GameScreen - Incorrect answer:', {
-        word: currentWord.word,
-        resetStreak: true,
-        remainingWords: words.filter(w => !w.completed).length
-      });
-    }
-
-    // Load next word after a delay
-    setTimeout(loadNextWord, 1000);
+  const handleObstacleClear = () => {
+    const newScore = score + 1;
+    setScore(newScore);
+    setStreak(streak + 1);
+    setFeedback('correct');
+    saveScore(newScore);
+    loadNextWord();
   };
 
   const resetGame = () => {
@@ -143,6 +116,8 @@ export default function GameScreen() {
     setShowResults(false);
     setStreak(0);
     setWords(prev => prev.map(w => ({ ...w, completed: false })));
+    setGameRunning(false);
+    setScore(0); // Reset score
     loadNextWord();
   };
 
@@ -169,16 +144,27 @@ export default function GameScreen() {
   if (showResults) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Round Complete!</Text>
+        <Text style={styles.title}>Game Over!</Text>
         <View style={styles.resultsContainer}>
           <Text style={styles.resultText}>Score: {score}</Text>
           <Text style={styles.resultText}>
-            Accuracy: {Math.round((gameStats.correct / gameStats.total) * 100)}%
+            Obstacles Cleared: {score}
           </Text>
           <Text style={styles.streakText}>Best Streak: {streak}</Text>
         </View>
         <TouchableOpacity style={styles.playAgainButton} onPress={resetGame}>
           <Text style={styles.playAgainText}>Play Again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!gameRunning) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Word Runner</Text>
+        <TouchableOpacity style={styles.startButton} onPress={handleGameStart}>
+          <Text style={styles.startButtonText}>Start Game</Text>
         </TouchableOpacity>
       </View>
     );
@@ -191,46 +177,16 @@ export default function GameScreen() {
         <Text style={styles.streakText}>Streak: {streak}</Text>
       </View>
       {currentWord && (
-        <>
-          <Animated.View
-            style={[
-              styles.wordContainer,
-              {
-                transform: [{ translateX: shake }],
-                backgroundColor: feedback === 'correct' ? '#dcfce7' :
-                  feedback === 'incorrect' ? '#fee2e2' :
-                    '#f3f4f6'
-              },
-            ]}
-          >
-            <TouchableOpacity onPress={handleWordPress}>
-              <Text style={styles.wordText}>{currentWord.word}</Text>
-            </TouchableOpacity>
-            <View style={styles.dotContainer}>
-              {[...Array(currentWord.dots)].map((_, i) => (
-                <View
-                  key={i}
-                  style={styles.dot}
-                />
-              ))}
-            </View>
-          </Animated.View>
-          <TouchableOpacity
-            style={styles.audioButton}
-            onPress={() => console.log('GameScreen - Audio button pressed')}
-          >
-            <MaterialCommunityIcons name="volume-high" size={24} color="#6366f1" />
-          </TouchableOpacity>
-        </>
+        <View style={styles.wordContainer}>
+          <Text style={styles.wordText}>{currentWord.word}</Text>
+        </View>
       )}
-      {feedback && (
-        <Text style={[
-          styles.feedbackText,
-          feedback === 'correct' ? styles.correctText : styles.incorrectText
-        ]}>
-          {feedback === 'correct' ? 'Correct!' : 'Try Again!'}
-        </Text>
-      )}
+      <Canvas
+        width={width}
+        height={height * 0.6}
+        onCollision={handleCollision}
+        onClear={handleObstacleClear}
+      />
     </View>
   );
 }
@@ -256,10 +212,13 @@ const styles = StyleSheet.create({
     color: '#6366f1',
   },
   wordContainer: {
-    padding: 20,
-    borderRadius: 10,
-    minWidth: 200,
-    alignItems: 'center'
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    padding: 10,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 5,
+    zIndex: 1,
   },
   wordText: {
     fontSize: 48,
@@ -320,6 +279,17 @@ const styles = StyleSheet.create({
   playAgainText: {
     color: 'white',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  startButton: {
+    backgroundColor: '#6366f1',
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 40,
+  },
+  startButtonText: {
+    color: 'white',
+    fontSize: 24,
     fontWeight: 'bold',
   },
 });
