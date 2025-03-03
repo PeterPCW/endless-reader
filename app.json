@@ -5,8 +5,10 @@
     "entryPoint": "expo-router/entry",
     "version": "1.0.0",
     "orientation": "landscape",
-    "icon": "./generated-icon.png",
+    "icon": "assets/images/icon.png",
     "scheme": "endlessreader",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -16,7 +18,31 @@
       "bundleIdentifier": "com.peterorjustp.endlessreader"
     },
     "android": {
-      "package": "com.peterorjustp.endlessreader"
+      "package": "com.peterorjustp.endlessreader",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
