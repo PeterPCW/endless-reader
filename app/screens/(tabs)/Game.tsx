@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -15,7 +15,7 @@ const GROUND_LEVEL = SCREEN_HEIGHT - 150;
 // Example word list
 const wordList = ["Jump", "Run", "Dodge", "Hop", "Leap", "Skip", "Bound", "Avoid"];
 
-const GameScreen = () => {
+export default function Game() {
   // Character movement
   const [runnerY, setRunnerY] = useState(GROUND_LEVEL);
   const [isJumping, setIsJumping] = useState(false);
@@ -25,8 +25,9 @@ const GameScreen = () => {
   const [obstacleX, setObstacleX] = useState<number | null>(null);
   const [isObstacleActive, setIsObstacleActive] = useState(false);
   const [currentWord, setCurrentWord] = useState<string>("CLICK ME");
+  const [isGameOver, setIsGameOver] = useState(false);
 
-  // ⬆️ Handle Jumping
+  // Handle Jumping
   useEffect(() => {
     if (isJumping) {
       let jumpInterval = setInterval(() => {
@@ -52,7 +53,7 @@ const GameScreen = () => {
     }
   }, [isJumping]);
 
-  // 🆕 Spawning Obstacles & Words
+  // Spawning Obstacles & Words
   useEffect(() => {
     let moveInterval: NodeJS.Timeout;
     let spawnTimeout: NodeJS.Timeout;
@@ -72,7 +73,6 @@ const GameScreen = () => {
             setIsObstacleActive(false);
             setObstacleX(null);
             setIsJumping(false);
-            //setCurrentWord("CLICK ME"); // Reset word after obstacle disappears
             scheduleNextSpawn();
             return null;
           }
@@ -110,6 +110,22 @@ const GameScreen = () => {
     wordClicked.current = true;
   }
 
+  useEffect(() => {
+    if (obstacleX !== null && obstacleX - (styles.runner.left + styles.runner.width) <= 0 && !isJumping) {
+      setIsGameOver(true);
+      Alert.alert('Game Over', 'You lost! Do you want to play again?', [
+        { text: 'Yes', onPress: () => {
+          setIsGameOver(false);
+          setObstacleX(null);
+          setIsObstacleActive(false);
+          setRunnerY(GROUND_LEVEL);
+          setIsJumping(false);
+        } },
+        { text: 'No', onPress: () => console.log('No') },
+      ]);
+    }
+  }, [obstacleX, isJumping, isGameOver]);
+
   return (
     <View style={styles.container}>
       {/* Clickable word in the corner */}
@@ -124,6 +140,7 @@ const GameScreen = () => {
       {isObstacleActive && obstacleX !== null && (
         <View style={[styles.obstacle, { left: obstacleX }]} />
       )}
+      {isGameOver && <Text style={{ fontSize: 50, color: 'red' }}>Game Over</Text>}
     </View>
   );
 };
@@ -165,5 +182,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
   },
 });
-
-export default GameScreen;

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 
-export default function ProfileScreen() {
+export default function Profile() {
   const [stats, setStats] = useState({
     score: 0,
     wordsCompleted: 0
