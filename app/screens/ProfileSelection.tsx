@@ -2,6 +2,8 @@ import React from 'react';
 import { ThemedView } from '@/app/components/ThemedView';
 import { Button } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import NewProfile from '@/app/components/NewProfile';
+
 
 type RootStackParamList = {
   // other routes
@@ -20,6 +22,7 @@ export default function ProfileSelection() {
       <Button title="Levels" onPress={() => navigation.navigate('Levels')} />
       <Button title="Explore" onPress={() => navigation.navigate('Explore')} />
       <Button title="Complete" onPress={() => navigation.navigate('Complete')} />
+      <Button title="New Profile" onPress={() => <NewProfile visible={true} onClose={() => {}} />} />
     </ThemedView>
   );
 }

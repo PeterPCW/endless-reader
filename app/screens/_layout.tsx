@@ -1,18 +1,18 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationIndependentTree } from '@react-navigation/core';
 import ProfileSelection from '@/app/screens/ProfileSelection';
-import Profile from '@/app/screens/Profile';
 import Levels from '@/app/screens/Levels';
 import Explore from '@/app/screens/Explore';
 import LevelStackNavigator from '@/app/components/LevelStackNavigator';
 import Complete from '@/app/screens/Complete';
+import Profile from '@/app/screens/Profile';
 
 export default function RootLayout() {
   return (
-    <NavigationContainer>
+    <NavigationIndependentTree>
       <AppNavigator />
-    </NavigationContainer>
+    </NavigationIndependentTree>
   );
 }
 
@@ -37,7 +37,7 @@ function AppNavigator() {
 
       {/* 3. Explore Expo Screen */}
       <Stack.Screen
-        name="explore"
+        name="Explore"
         component={Explore}
         options={{ headerShown: true}}
       />
@@ -56,7 +56,8 @@ function AppNavigator() {
         options={{ headerShown: true }}
       />
 
-      {/* 2. Profile Settings */}
+      {/* 6. Profile Screen */}
+      {/* This screen is not part of the main navigation flow but can be accessed from other screens */}
       <Stack.Screen
         name="Profile"
         component={Profile}

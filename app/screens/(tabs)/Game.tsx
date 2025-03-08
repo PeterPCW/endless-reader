@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -127,10 +128,10 @@ export default function Game() {
   }, [obstacleX, isJumping, isGameOver]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.gameContainer}>
       {/* Clickable word in the corner */}
       <TouchableOpacity onPress={handleWordClick} style={styles.wordContainer}>
-        <Text style={styles.word}>{currentWord}</Text>
+        <Text style={styles.gameWord}>{currentWord}</Text>
       </TouchableOpacity>
 
       {/* Runner (Character) */}
@@ -144,41 +145,3 @@ export default function Game() {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  wordContainer: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-  },
-  word: {
-    fontSize: 80,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  runner: {
-    position: 'absolute',
-    bottom: 0,
-    left: 100,
-    width: 50,
-    height: 50,
-    backgroundColor: 'orange',
-    borderRadius: 25,
-  },
-  obstacle: {
-    position: 'absolute',
-    bottom: 55,
-    width: OBSTACLE_WIDTH,
-    height: OBSTACLE_HEIGHT,
-    backgroundColor: 'green',
-  },
-});

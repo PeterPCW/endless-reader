@@ -1,4 +1,51 @@
-import { View, Text, StyleSheet } from 'react-native';
+// /app/screens/Profile.tsx
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Image, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
+type RootStackParamList = {
+  // other routes
+  ProfileSelection: undefined;
+};
+
+export default function Profile() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    // Load profile data from AsyncStorage
+    AsyncStorage.getItem('profiles').then(data => {
+      const profiles = data ? JSON.parse(data) : [];
+      // Assume current profile is the first one for this example
+      if (profiles.length > 0) setProfile(profiles[0]);
+    });
+  }, []);
+
+  if (!profile) {
+    return <Button title="Switch Profile" onPress={() => navigation.navigate('ProfileSelection')} />;
+  }
+
+  return (
+    <View>
+      <Image source={{ uri: profile.avatar }} style={{ width: 100, height: 100 }} />
+      <TextInput
+        value={profile.name}
+        onChangeText={name => setProfile({ ...profile, name })}
+        placeholder="Profile Name"
+      />
+      {/* Display level progress summary */}
+      {Object.entries(profile.levels).map(([levelId, data]) => (
+        <Text key={levelId}>
+          {levelId}: High Score {data.highScore} - {data.completed ? 'Complete' : 'Incomplete'}
+        </Text>
+      ))}
+      <Button title="Switch Profile" onPress={() => navigation.navigate('ProfileSelection')} />
+    </View>
+  );
+}
+
+/*import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 
@@ -53,37 +100,4 @@ export default function Profile() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
-  },
-  statCard: {
-    backgroundColor: '#f3f4f6',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    minWidth: 140,
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#6366f1',
-    marginBottom: 5,
-  },
-  statLabel: {
-    fontSize: 16,
-    color: '#4b5563',
-  },
-});
+*/

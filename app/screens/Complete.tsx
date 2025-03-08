@@ -10,7 +10,7 @@ export default function Complete() {
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
-          source={require('@/assets/images/icon.png')}
+          source={require('@/app/assets/images/icon.png')}
           style={styles.reactLogo}
         />
       }>

@@ -10,7 +10,7 @@ const syllableMap: { [key: string]: string[] } = {
   through: ["θθθ", "ɹɹɹ", "uu:"],  // "throo"
 };
 
-const SpeakTrainer = ({ word }: { word: string }) => {
+export default function SpeechButton({ word }: { word: string }, { level }: { level: number }) {
   const syllables = syllableMap[word.toLowerCase()] || [word]; // Default to full word if missing
 
   const speakSyllables = async () => {
@@ -42,5 +42,3 @@ const SpeakTrainer = ({ word }: { word: string }) => {
     </View>
   );
 };
-
-export default SpeakTrainer;

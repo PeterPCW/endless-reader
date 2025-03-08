@@ -1,0 +1,17 @@
+{
+  "id": "1",
+  "words": [
+    {
+      "word": "apple",
+      "syllables": ["æææ", "ppp", "lll"]
+    },
+    {
+      "word": "banana",
+      "syllables": ["bbb", "əəə", "nnn", "æææ", "nnn", "əəə"]
+    }
+  ],
+  "sentences": [
+    "I ate an apple and a banana.",
+    "The apple was crisp while the banana was sweet."
+  ]
+}
