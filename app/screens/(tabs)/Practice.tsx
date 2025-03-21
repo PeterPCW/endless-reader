@@ -1,5 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, Animated } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,7 +10,6 @@ type WordType = {
 };
 
 export default function Practice() {
-  const [progress, setProgress] = useState<Record<string, number>>({});
   const [words, setWords] = useState<WordType[]>([]);
 
   useEffect(() => {
@@ -25,24 +23,15 @@ export default function Practice() {
   const initializePractice = async () => {
     try {
       console.log('PracticeScreen - Loading words from assets');
-      const levelData = require('../../assets/data/words.json');
+      const levelData = require('../../assets/data/level1.json');
       setWords(levelData.levels[0].words);
 
-      // Load progress from storage
-      const savedProgress = await AsyncStorage.getItem('@word_progress');
-      if (savedProgress) {
-        setProgress(JSON.parse(savedProgress));
-        console.log('PracticeScreen - Loaded progress:', savedProgress);
-      }
     } catch (error) {
       console.error('PracticeScreen - Error initializing:', error);
     }
   };
 
   const renderWord = ({ item }: { item: WordType }) => {
-    const timesPressed = progress[item.word] || 0;
-    const opacity = new Animated.Value(timesPressed > 0 ? 0.6 : 1);
-
     return (
       <TouchableOpacity 
         style={[styles.wordCard, styles.selectedCard]}

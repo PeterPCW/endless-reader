@@ -5,7 +5,7 @@ import ProfileSelection from '@/app/screens/ProfileSelection';
 import Levels from '@/app/screens/Levels';
 import Explore from '@/app/screens/Explore';
 import LevelStackNavigator from '@/app/components/LevelStackNavigator';
-import Complete from '@/app/screens/Complete';
+import Complete from '@/app/screens/(tabs)/Complete';
 import Profile from '@/app/screens/Profile';
 
 export default function RootLayout() {
@@ -49,14 +49,7 @@ function AppNavigator() {
         options={{ headerShown: true }}
       />
 
-      {/* 5. Completion Screen (outside of tabs) */}
-      <Stack.Screen
-        name="Complete"
-        component={Complete}
-        options={{ headerShown: true }}
-      />
-
-      {/* 6. Profile Screen */}
+      {/* 5. Profile Screen */}
       {/* This screen is not part of the main navigation flow but can be accessed from other screens */}
       <Stack.Screen
         name="Profile"

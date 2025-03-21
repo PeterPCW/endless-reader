@@ -21,7 +21,6 @@ export default function ProfileSelection() {
       <Button title="Profile" onPress={() => navigation.navigate('Profile')} />
       <Button title="Levels" onPress={() => navigation.navigate('Levels')} />
       <Button title="Explore" onPress={() => navigation.navigate('Explore')} />
-      <Button title="Complete" onPress={() => navigation.navigate('Complete')} />
       <Button title="New Profile" onPress={() => <NewProfile visible={true} onClose={() => {}} />} />
     </ThemedView>
   );

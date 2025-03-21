@@ -49,41 +49,6 @@ export const sharedStyles = StyleSheet.create({
     backgroundColor: '#e0e7ff',
     borderRadius: 25,
   },
-  gameContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  wordContainer: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-  },
-  gameWord: {
-    fontSize: 80,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  runner: {
-    position: 'absolute',
-    bottom: 0,
-    left: 100,
-    width: 50,
-    height: 50,
-    backgroundColor: 'orange',
-    borderRadius: 25,
-  },
-  obstacle: {
-    position: 'absolute',
-    bottom: 55,
-    width: 50,
-    height: 50,
-    backgroundColor: 'green',
-  },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -206,5 +171,48 @@ export const sharedStyles = StyleSheet.create({
   levelTitle: {
     fontSize: 18,
     fontWeight: '500'
+  },
+  gameContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wordContainer: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    backgroundColor: 'transparent',
+    borderRadius: 5,
+  },
+  gameWord: {
+    fontSize: 80,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  score: {
+    position: 'absolute',
+    top: 20,
+    right: '10%',
+    fontSize: 80,
+    fontWeight: 'bold',
+    color: 'black'
+  },
+  movingWord: {
+    position: 'absolute',
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: 'red',
+  },
+  character: {
+    position: "absolute",
+    left: 100,
+    backgroundColor: "transparent",
+    overflow: "hidden", // Ensures only one frame is visible
+  },
+  background: {
+    position: 'absolute',
+    resizeMode: 'stretch',
+    bottom: 0
   }
 });

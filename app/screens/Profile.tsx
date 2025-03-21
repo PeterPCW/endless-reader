@@ -9,9 +9,20 @@ type RootStackParamList = {
   ProfileSelection: undefined;
 };
 
+type ProfileType = {
+  avatar: string;
+  name: string;
+  levels: {
+    [levelId: string]: {
+      highScore: number;
+      completed: boolean;
+    };
+  };
+};
+
 export default function Profile() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<ProfileType | null>(null);
 
   useEffect(() => {
     // Load profile data from AsyncStorage

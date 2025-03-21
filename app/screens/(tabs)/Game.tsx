@@ -1,76 +1,78 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, Dimensions, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const OBSTACLE_WIDTH = 100; // Match text width roughly
-const OBSTACLE_HEIGHT = 100;
-const BASE_SPAWN_DELAY = 2000; // Minimum spawn delay in ms
-const RANDOM_EXTRA_DELAY = 2000; // Extra random delay in ms
-const BASE_OBSTACLE_SPEED = 4; // Pixels per frame
-const JUMP_HEIGHT = 200;
+const WORD_WIDTH = 100;
+const WORD_HEIGHT = 100;
+const BASE_SPAWN_DELAY = 2000;
+const RANDOM_EXTRA_DELAY = 2000;
+const BASE_WORD_SPEED = 4;
+const JUMP_HEIGHT = 300;
 const GRAVITY = 5;
-const GROUND_LEVEL = SCREEN_HEIGHT - 150;
+const GROUND_LEVEL = SCREEN_HEIGHT * .75;
 
-// Load sprite sheet
 const SPRITE_SHEET = require('@/app/assets/images/runner-sprite.png');
 const FRAME_WIDTH = 100;
 const FRAME_HEIGHT = 100;
 
-// Animation frames
-const RUN_FRAMES = [0, 1, 2]; // Running animation
-const JUMP_FRAMES = [3, 4, 5]; // Jump start, mid-air, and landing
+const RUN_FRAMES = [0, 1, 2];
+const JUMP_FRAMES = [3, 4];
+const SPEED_CHANGE_FRAME = 5;
 
-// Example word list
+const BACKGROUND_IMAGE = require('@/app/assets/images/background.png');
+const FOREGROUND_IMAGE = require('@/app/assets/images/foreground.png');
+
 const wordList = ["Jump", "Run", "Dodge", "Hop", "Leap", "Skip", "Bound", "Avoid"];
 
 export default function Game() {
-  // Character movement
   const [runnerY, setRunnerY] = useState(GROUND_LEVEL);
   const [isJumping, setIsJumping] = useState(false);
   const wordClicked = useRef(false);
   const [frameIndex, setFrameIndex] = useState(0);
-
-  // Obstacle movement
-  const [obstacleX, setObstacleX] = useState<number | null>(null);
-  const [isObstacleActive, setIsObstacleActive] = useState(false);
+  const [wordX, setWordX] = useState<number | null>(null);
+  const [isWordActive, setIsWordActive] = useState(false);
   const [currentWord, setCurrentWord] = useState<string>("CLICK ME");
-  const [isGameOver, setIsGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [backgroundX, setBackgroundX] = useState(0);
+  const [foregroundX, setForegroundX] = useState(0);
+  const [gameSpeed, setGameSpeed] = useState(BASE_WORD_SPEED);
+  const [speedChanging, setSpeedChanging] = useState(false);
 
-  // Runner Animation
   useEffect(() => {
     let animInterval: NodeJS.Timeout;
-    
-    if (!isJumping) {
+    if (!isJumping && !speedChanging) {
       animInterval = setInterval(() => {
         setFrameIndex(prev => (prev + 1) % RUN_FRAMES.length);
       }, 200);
+    } else if (speedChanging) {
+      setFrameIndex(SPEED_CHANGE_FRAME);
+      setTimeout(() => setSpeedChanging(false), 200);
     } else {
-      setFrameIndex(JUMP_FRAMES[0]); // Set jump start frame
+      setFrameIndex(JUMP_FRAMES[0]);
     }
-
     return () => clearInterval(animInterval);
-  }, [isJumping]);
+  }, [isJumping, speedChanging]);
 
-  // Handle Jumping
   useEffect(() => {
     if (isJumping) {
       let jumpInterval = setInterval(() => {
-        setFrameIndex(JUMP_FRAMES[1]); // Mid-air frame
+        setFrameIndex(JUMP_FRAMES[1]);
         setRunnerY(prevY => {
           if (prevY > GROUND_LEVEL - JUMP_HEIGHT) {
-            return prevY - GRAVITY * 4; // Jump up
+            return prevY - GRAVITY * 4;
           } else {
             clearInterval(jumpInterval);
             let fallInterval = setInterval(() => {
               setRunnerY(prevY => {
                 if (prevY < GROUND_LEVEL) {
-                  return prevY + GRAVITY; // Fall down
+                  return prevY + GRAVITY;
                 } else {
                   clearInterval(fallInterval);
-                  setFrameIndex(JUMP_FRAMES[2]); // Landing frame
-                  setTimeout(() => setIsJumping(false), 100);
+                  setFrameIndex(JUMP_FRAMES[0]);
+                  setScore(prevScore => prevScore + 1);
+                  setTimeout(() => setIsJumping(false), 1000);
                   return GROUND_LEVEL;
                 }
               });
@@ -82,25 +84,27 @@ export default function Game() {
     }
   }, [isJumping]);
 
-  // Spawning Obstacles & Words
   useEffect(() => {
     let moveInterval: NodeJS.Timeout;
     let spawnTimeout: NodeJS.Timeout;
     let speed: number;
 
-    const spawnObstacle = () => {
-      setObstacleX(SCREEN_WIDTH);
-      setIsObstacleActive(true);
+    const spawnWord = () => {
+      setWordX(SCREEN_WIDTH);
+      setIsWordActive(true);
       setCurrentWord(wordList[Math.floor(Math.random() * wordList.length)]);
-      wordClicked.current = false; // Reset word click on new obstacle
+      wordClicked.current = false;
+      speed = (1 + Math.random()) * BASE_WORD_SPEED;
+      setGameSpeed(speed);
+      setSpeedChanging(true);
 
       moveInterval = setInterval(() => {
-        setObstacleX(prevX => {
+        setWordX(prevX => {
           if (prevX === null) return null;
-          if (prevX <= -OBSTACLE_WIDTH) {
+          if (prevX <= -WORD_WIDTH) {
             clearInterval(moveInterval);
-            setIsObstacleActive(false);
-            setObstacleX(null);
+            setIsWordActive(false);
+            setWordX(null);
             setIsJumping(false);
             scheduleNextSpawn();
             return null;
@@ -116,8 +120,7 @@ export default function Game() {
 
     const scheduleNextSpawn = () => {
       const delay = BASE_SPAWN_DELAY + Math.random() * RANDOM_EXTRA_DELAY;
-      speed = (1 + Math.random()) * BASE_OBSTACLE_SPEED;
-      spawnTimeout = setTimeout(spawnObstacle, delay);
+      spawnTimeout = setTimeout(spawnWord, delay);
       wordClicked.current = false;
     };
 
@@ -129,70 +132,57 @@ export default function Game() {
     };
   }, []);
 
+  useEffect(() => {
+    const bgInterval = setInterval(() => {
+      setBackgroundX(prevX => (prevX - 1) % SCREEN_WIDTH);
+      setForegroundX(prevX => (prevX - gameSpeed) % (SCREEN_WIDTH * 10));
+    }, 16);
+    return () => clearInterval(bgInterval);
+  }, [gameSpeed]);
+
+  
   const handleJump = () => {
     if (!isJumping && wordClicked.current) {
       setIsJumping(true);
     }
   };
-
   const handleWordClick = () => {
     wordClicked.current = true;
   };
 
-  useEffect(() => {
-    if (obstacleX !== null && obstacleX - 100 <= 0 && !isJumping) {
-      setIsGameOver(true);
-      Alert.alert('Game Over', 'You lost! Do you want to play again?', [
-        { text: 'Yes', onPress: () => {
-          setIsGameOver(false);
-          setObstacleX(null);
-          setIsObstacleActive(false);
-          setRunnerY(GROUND_LEVEL);
-          setIsJumping(false);
-        } },
-        { text: 'No', onPress: () => console.log('No') },
-      ]);
-    }
-  }, [obstacleX, isJumping, isGameOver]);
-
   return (
     <View style={styles.gameContainer}>
-      {/* Clickable word in the corner */}
+      <Image source={BACKGROUND_IMAGE} style={[styles.background, { left: backgroundX, width: SCREEN_WIDTH * 2, height: SCREEN_HEIGHT}]} />
+      <Image source={FOREGROUND_IMAGE} style={[styles.background, { left: foregroundX, width: SCREEN_WIDTH * 10, height: SCREEN_HEIGHT / 2}]} />
       <TouchableOpacity onPress={handleWordClick} style={styles.wordContainer}>
         <Text style={styles.gameWord}>{currentWord}</Text>
       </TouchableOpacity>
-
-      {/* Runner sprite using a sprite sheet. The style marginLeft simulates the cropping effect. */}
-      <Image
-        source={require('@/app/assets/images/character_sprite.png')}
-        style={{
-          position: "absolute",
-          left: 100,
+      <View
+        style={[styles.character, {
           top: runnerY,
           width: FRAME_WIDTH,
           height: FRAME_HEIGHT,
-          resizeMode: "cover",
-          backgroundColor: "transparent",
-          marginLeft: -frameIndex * FRAME_WIDTH,
-        }}
-      />
-
-      {/* Obstacle (Word as Text) */}
-      {isObstacleActive && obstacleX !== null && (
-        <Text
+        }]}
+      >
+        <Image
+          source={SPRITE_SHEET}
           style={{
-            position: 'absolute',
-            left: obstacleX,
-            bottom: 100,
-            fontSize: 40,
-            fontWeight: 'bold',
-            color: 'red',
-          }}>
+            width: FRAME_WIDTH * 6, // Full width of the sprite sheet
+            height: FRAME_HEIGHT,
+            resizeMode: "cover",
+            transform: [{ translateX: -frameIndex * FRAME_WIDTH }], // Shift sprite sheet left
+          }}
+        />
+      </View>
+      
+      {/* Word (Word as Text) */}
+      {isWordActive && wordX !== null && (
+        <Text
+          style={[styles.movingWord, {left: wordX, top: JUMP_HEIGHT + SCREEN_HEIGHT - GROUND_LEVEL }]}>
           {currentWord}
         </Text>
       )}
-
-      {isGameOver && <Text style={{ fontSize: 50, color: 'red' }}>Game Over</Text>}
+      <Text style={styles.score}>Score: {score}</Text>
     </View>
   );
 };
