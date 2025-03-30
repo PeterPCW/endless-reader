@@ -1,27 +1,31 @@
 import React, { useEffect, useState, useContext, createContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import levelData from '@/app/assets/data/levels.json';
+import { levelsData, LevelMetaData } from '@/app/assets/data/levels';
 import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
 
-interface Level {
-  id: string;
+export interface Level extends LevelMetaData {
   title: string;
-  thumbnail: string;
-  // other properties can be added as needed
 }
 
-type RootStackParamList = {
-  // other routes
+export type RootStackParamList = {
+  ProfileSelection: undefined;
+  Levels: undefined;
+  Explore: undefined;
   LevelStack: undefined;
+  Profile: undefined;
+  GamesNavigator: { screen: 'Runner' | 'Snake' | 'Invaders' | 'Rampage' };
 };
 
 type LevelContextType = {
-  setSelectedLevel: (level: Level) => void;
+  selectedLevel: LevelMetaData | null;
+  setSelectedLevel: (level: LevelMetaData) => void;
 };
 
-const LevelContext = createContext<LevelContextType>({ setSelectedLevel: () => {} });
-
+export const LevelContext = createContext<LevelContextType>({
+  selectedLevel: null,
+  setSelectedLevel: () => {},
+});
 
 export default function Levels() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -30,18 +34,14 @@ export default function Levels() {
 
   useEffect(() => {
     // Load levels from the JSON file (assumed to be an array of level objects)
-    setLevels(levelData.levels.map(level => ({
-      id: level.id,
+    setLevels(levelsData.levels.map(level => ({
+      ...level,
       title: level.name,
-      thumbnail: level.thumbnail,
-      // map other properties as needed
     })));
   }, []);
 
   const onSelectLevel = (level: Level) => {
-    // Set the global level selection so that other screens can use it
-    setSelectedLevel(level);
-    // Navigate to the in-level tab navigator (registered as "LevelStack")
+    setSelectedLevel(level); // Ensure this updates the context
     navigation.navigate('LevelStack');
   };
 

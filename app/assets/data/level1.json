@@ -3,15 +3,17 @@
   "words": [
     {
       "word": "apple",
-      "syllables": ["æææ", "ppp", "lll"]
+      "parts": ["a", "pp", "le"],
+      "voiced": ["v", "w", "v"]
     },
     {
       "word": "banana",
-      "syllables": ["bbb", "əəə", "nnn", "æææ", "nnn", "əəə"]
+      "parts": ["b", "a", "n", "a", "n", "a"],
+      "voiced": ["v", "v", "v", "v", "v", "v"]
     }
   ],
   "sentences": [
     "I ate an apple and a banana.",
-    "The apple was crisp while the banana was sweet."
+    "The apple was crisp. The banana was sweet."
   ]
 }

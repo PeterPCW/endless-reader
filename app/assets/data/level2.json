@@ -3,15 +3,17 @@
   "words": [
     {
       "word": "thought",
-      "syllables": ["θθθ", "ɔɔɔ", "t"]
+      "parts": ["th", "ough", "t"],
+      "voiced": ["w", "v", "v"]
     },
     {
       "word": "through",
-      "syllables": ["θθθ", "ɹɹɹ", "uu:"]
+      "parts": ["th", "r", "ough"],
+      "voiced": ["w", "v", "v"]
     }
   ],
   "sentences": [
-    "I see through my glasses.",
-    "I thought I saw a cat."
+    "I thought I saw a cat.",
+    "I see through my glasses."
   ]
 }

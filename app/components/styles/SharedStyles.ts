@@ -45,9 +45,14 @@ export const sharedStyles = StyleSheet.create({
     backgroundColor: '#6366f1',
   },
   audioButton: {
-    padding: 10,
-    backgroundColor: '#e0e7ff',
-    borderRadius: 25,
+    width: 60, // Larger button size
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 30, // Circular button
+    backgroundColor: 'transparent', // Remove background color
+    borderWidth: 2,
+    borderColor: '#ffffff', // Add a white border for visibility
   },
   statsContainer: {
     flexDirection: 'row',
@@ -180,8 +185,8 @@ export const sharedStyles = StyleSheet.create({
   },
   wordContainer: {
     position: 'absolute',
-    top: 20,
-    left: 20,
+    top: '5%', // Converted from 20
+    left: '5%', // Converted from 20
     backgroundColor: 'transparent',
     borderRadius: 5,
   },
@@ -192,27 +197,134 @@ export const sharedStyles = StyleSheet.create({
   },
   score: {
     position: 'absolute',
-    top: 20,
-    right: '10%',
+    top: '5%', // Converted from 20
+    right: '10%', // Converted from 10%
     fontSize: 80,
     fontWeight: 'bold',
-    color: 'black'
+    color: 'black',
   },
   movingWord: {
     position: 'absolute',
     fontSize: 40,
     fontWeight: 'bold',
     color: 'red',
+    textAlign: 'center', // Ensure proper alignment
   },
   character: {
     position: "absolute",
-    left: 100,
+    left: '10%', // Converted from 100
     backgroundColor: "transparent",
     overflow: "hidden", // Ensures only one frame is visible
   },
   background: {
     position: 'absolute',
     resizeMode: 'stretch',
-    bottom: 0
+    bottom: '0%', // Converted from 0
+  },
+  sentence: {
+    fontSize: 60,
+    color: 'white',
+  },
+  sentenceContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1f2937',
+    padding: 20,
+  },
+  errorText: {
+    position: 'absolute',
+    fontSize: 60,
+    fontWeight: 'bold',
+    color: 'red',
+    top: '50%', // Converted from an approximate center position
+    left: '10%', // Converted from an approximate left position
+  },
+  practiceWord: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  wordTextContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  practiceWordText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  wordPartWrapper: {
+    position: 'relative', // Ensure the overlay is positioned relative to the text
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wordPartsContainer: {
+    flexDirection: 'row', // Lay out parts horizontally
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1, // Allow it to take up available space
+  },
+  wordPart: {
+    width: 40, // Fixed width for each part
+    height: 60, // Fixed height for each part
+    marginHorizontal: 2, // Small spacing between parts
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  wordPartTextWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wordPartText: {
+    fontSize: 60, // Font size for the text inside parts
+    fontWeight: 'bold',
+    color: '#f3f4f6', // Default off-white
+    textAlign: 'center',
+  },
+  mainText: {
+    fontSize: 32, // Adjust font size for word parts
+    fontWeight: 'bold',
+    color: '#333333', // Default off-white
+    textAlign: 'center',
+  },
+  practiceWordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#858585', // Dark gray background
+    paddingVertical: 20, // Keep vertical padding
+    paddingLeft: 20, // Keep left padding for space before word
+    paddingRight: 10, // Reduce right padding to be closer to button
+    borderRadius: 10,
+    marginBottom: 20,
+    position: 'relative', // Needed for absolute positioning of the overlay
+  },
+  panOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0, // Cover the entire parent container
+    bottom: 0,
+    backgroundColor: 'transparent', // Make it invisible
+    zIndex: 1, // Ensure it's above the text container but below the button if needed
+  },
+  speechButtonWrapper: {
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center',
+    marginRight: 10, // Push the button slightly left
+  },
+  speechButton: {
+    fontSize: 40,
+    textAlign: 'right',
+    alignContent: 'center'
   }
 });

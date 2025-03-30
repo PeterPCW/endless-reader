@@ -1,44 +1,30 @@
 import React from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import * as Speech from "expo-speech";
+import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
 
-// Define syllables manually for accurate pronunciation
-const syllableMap: { [key: string]: string[] } = {
-  apple: ["æææ", "ppp", "lll"],
-  banana: ["bbb", "əəə", "nnn", "æææ", "nnn", "əəə"],
-  thought: ["θθθ", "ɔɔɔ", "t"],  // "thawt"
-  through: ["θθθ", "ɹɹɹ", "uu:"],  // "throo"
-};
-
-export default function SpeechButton({ word }: { word: string }, { level }: { level: number }) {
-  const syllables = syllableMap[word.toLowerCase()] || [word]; // Default to full word if missing
+export default function SpeechButton({ word }: { readonly word: string }) {
 
   const speakSyllables = async () => {
-    // 1️⃣ Stretch the syllables
-    for (let syllable of syllables) {
-      await Speech.speak(syllable, { rate: 0.3, pitch: 1.0, language: "en-US" });
-    }
-
-    // 2️⃣ Prompt user to repeat
-    await Speech.speak("Okay, your turn!", { rate: 0.8 });
+    //This doesn't work, need to have individual syllables to be able to stretch it correctly
+    //Must use mp3s
+    Speech.speak(word, { rate: 0.001 })
     
-    // 3️⃣ Pause for response
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // 4️⃣ Ask them to say the word fast
-    await Speech.speak(`Say it fast!`, { rate: 0.8 });
-
     // 5️⃣ Pause again for response
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    
     // 6️⃣ Speak the word at full speed
-    await Speech.speak(word, { rate: 1.0 });
+    Speech.speak(word, { rate: 0.8 });
   };
 
   return (
     <View>
-      <Text>{word}</Text>
-      <Button title="🔊" onPress={speakSyllables} />
+      <TouchableOpacity
+        onPress={speakSyllables}>
+        <View pointerEvents="none">
+          <Text style={styles.speechButton}>🔊</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
