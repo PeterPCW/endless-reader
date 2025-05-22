@@ -2,18 +2,74 @@
   "id": "1",
   "words": [
     {
-      "word": "apple",
-      "parts": ["a", "pp", "le"],
-      "voiced": ["v", "w", "v"]
+      "word": "mama",
+      "syllables": 2,
+      "parts": ["m", "a", "m", "a"],
+      "voiced": ["n", "v", "n", "v"],
+      "length": ["l", "l", "l", "l"],
+      "source": ["mmm.mp3", "ahh.mp3", "mmm.mp3", "ahh.mp3"]
     },
     {
-      "word": "banana",
-      "parts": ["b", "a", "n", "a", "n", "a"],
-      "voiced": ["v", "v", "v", "v", "v", "v"]
-    }
+      "word": "dada",
+      "syllables": 2,
+      "parts": ["d", "a", "d", "a"],
+      "voiced": ["v", "v", "v", "v"],
+      "length": ["s", "l", "s", "l"],
+      "source": ["d.mp3", "aah.mp3", "d.mp3", "aah.mp3"]
+    },
+    {
+      "word": "up",
+      "syllables": 1,
+      "parts": ["u", "p"],
+      "voiced": ["v", "w"],
+      "length": ["l", "s"],
+      "source": ["uhh.mp3", "p.mp3"]
+    },
+    {
+      "word": "milk",
+      "syllables": 1,
+      "parts": ["m", "i", "l", "k"],
+      "voiced": ["v", "v", "v", "w"],
+      "length": ["l", "l", "l", "s"],
+      "source": ["mmm.mp3", "ihh.mp3", "lll.mp3", "k.mp3"]
+    },
+    {
+      "word": "eat",
+      "syllables": 1,
+      "parts": ["ea", "t"],
+      "voiced": ["v", "w"],
+      "length": ["l", "s"],
+      "source": ["E.mp3", "t.mp3"]
+    },
+    {
+      "word": "more",
+      "syllables": 1,
+      "parts": ["m", "or", "e"],
+      "voiced": ["v", "v", "s"],
+      "length": ["l", "l", "n"],
+      "source": ["mmm.mp3", "orr.mp3", "N/A"]
+    },
+    {
+      "word": "all",
+      "syllables": 1,
+      "parts": ["a", "ll"],
+      "voiced": ["v", "v"],
+      "length": ["l", "l"],
+      "source": ["ahh.mp3", "lll.mp3"]
+    },
+    {
+      "word": "done",
+      "syllables": 1,
+      "parts": ["d", "o", "n", "e"],
+      "voiced": ["v", "v", "n", "s"],
+      "length": ["s", "l", "l", "n"],
+      "source": ["d.mp3", "uhh.mp3", "nnn.mp3", "N/A"]
+    } 
   ],
   "sentences": [
-    "I ate an apple and a banana.",
-    "The apple was crisp. The banana was sweet."
+    "Mama, milk.",
+    "More eat.",
+    "Up, up, up!",
+    "Dada, all done."
   ]
 }

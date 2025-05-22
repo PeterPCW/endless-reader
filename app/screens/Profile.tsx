@@ -96,14 +96,14 @@ export default function Profile() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.containerStyle}>
       <Text style={styles.title}>Your Progress</Text>
       <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
+        <View style={styles.cardStyle}>
           <Text style={styles.statValue}>{stats.score}</Text>
           <Text style={styles.statLabel}>High Score</Text>
         </View>
-        <View style={styles.statCard}>
+        <View style={styles.cardStyle}>
           <Text style={styles.statValue}>{stats.wordsCompleted}</Text>
           <Text style={styles.statLabel}>Words Mastered</Text>
         </View>

@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, Image, Dimensions, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
-import { levels } from '@/app/assets/data/levels';
-import { LevelContext } from '@/app/screens/Levels'; 
+import { WordType, words } from '@/app/assets/data/words';
+import PauseMenuModal from '@/app/components/modals/PauseMenuModal';
+import WordMissedModal from '@/app/components/modals/WordMissedModal';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -13,74 +15,96 @@ const RANDOM_EXTRA_DELAY = 2000;
 const BASE_WORD_SPEED = 4;
 const JUMP_HEIGHT = 300;
 const GRAVITY = 5;
-const GROUND_LEVEL = SCREEN_HEIGHT * .75;
+const BASELINE_Y = SCREEN_HEIGHT * 0.8;
+const WORD_HEIGHT_VARIATION = SCREEN_HEIGHT * 0.1;
 
 const SPRITE_SHEET = require('@/app/assets/images/runner-sprite.png');
 const SPEED_CHANGE = require('@/app/assets/images/speed-effect.png')
 const FRAME_WIDTH = 150;
 const FRAME_HEIGHT = 150;
 
-const RUN_FRAMES = [0, 1, 2, 3];
+const RUN_FRAMES = [0, 1, 2];
 const JUMP_FRAME = 3;
+const FALL_FRAME = 3; // 4 once I add to the sprite sheet
 
 const BACKGROUND_IMAGE = require('@/app/assets/images/background.png');
 const FOREGROUND_IMAGE = require('@/app/assets/images/foreground.png');
 
-type WordType = {
-  word: string;
-  parts: string[];
-  voiced: string[];
-};
-
-interface LevelData {
-  id: string;
-  words: WordType[];
-  sentences: string[];
-}
-
 export default function Runner() {
-  const [runnerY, setRunnerY] = useState(GROUND_LEVEL);
+  const [runnerY, setRunnerY] = useState(BASELINE_Y - FRAME_HEIGHT/2);
   const [isJumping, setIsJumping] = useState(false);
   const wordClicked = useRef(false);
   const [frameIndex, setFrameIndex] = useState(0);
   const [wordX, setWordX] = useState<number | null>(null);
   const [isWordActive, setIsWordActive] = useState(false);
   const [currentWord, setCurrentWord] = useState<string>('');
+  const [currentWordHeight, setCurrentWordHeight] = useState(BASELINE_Y - WORD_HEIGHT/2);
   const [score, setScore] = useState(0);
-  const [backgroundX, setBackgroundX] = useState(0);
-  const [foregroundX, setForegroundX] = useState(0);
+  const [backPositions, setBackPositions] = useState({
+    x1: 0,
+    x2: SCREEN_WIDTH * 5,
+  });
+  const [forePositions, setForePositions] = useState({
+    x1: 0,
+    x2: SCREEN_WIDTH * 5,
+  });
   const [gameSpeed, setGameSpeed] = useState(BASE_WORD_SPEED);
   const [speedChanging, setSpeedChanging] = useState(false);
-  const [words, setWords] = useState<WordType[]>([]);
-  const { selectedLevel } = useContext(LevelContext);
+  const [filteringEnabled, setFilteringEnabled] = useState(false);
+  const [currentLevel, setCurrentLevel] = useState<{ id: string }>({ id: "1" });
+  const [showPauseMenu, setShowPauseMenu] = useState(false);
+  const [showWordMissed, setShowWordMissed] = useState(false);
+  const [levelWords, setLevelWords] = useState<{
+    current: WordType[];
+    recent: WordType[];
+    past: WordType[];
+    ancient: WordType[];
+  }>({ current: [], recent: [], past: [], ancient: []});
 
   useEffect(() => {
-    if (selectedLevel) {
-      initialize(selectedLevel.id); // Ensure selectedLevel.id is used correctly
+    const loadAndInitialize = async () => {
+      try {
+        // Try to load saved level
+        const savedLevel = await AsyncStorage.getItem('currentLevel');
+        const levelToLoad = savedLevel ? JSON.parse(savedLevel) : 1;
+        
+        setCurrentLevel({id: levelToLoad});
+        initialize(levelToLoad.id);
+      } catch (error) {
+        console.error('Error loading level', error);
+        // Fallback to default level
+        setCurrentLevel({id: "1"});
+        initialize("1");
+      }
+    };
+  
+    loadAndInitialize();
+  }, []);
+  
+  // Add another effect to save when level changes
+  useEffect(() => {
+    if (currentLevel.id) {
+      AsyncStorage.setItem('currentLevel', JSON.stringify(currentLevel.id));
+      initialize(currentLevel.id);
     }
-  }, [selectedLevel]);
+  }, [currentLevel]);
 
   const initialize = async (levelId: string) => {
-    try {
-      const levelData: LevelData | undefined = levels[levelId]; // Ensure levels[levelId] exists
-      if (levelData) {
-        setWords(levelData.words || []); // Set words from the level data
-      } else {
-        console.error(`Level data not found for id: ${levelId}`);
-        setWords([]);
-      }
-    } catch (error) {
-      console.error('Error loading level data:', error);
-      setWords([]);
-    }
-  };
+    setLevelWords({
+      current: words.words.filter(word => word.level === parseInt(levelId, 10)),
+      recent: words.words.filter(word => word.level + 2 >= parseInt(levelId, 10) && word.level < parseInt(levelId, 10)),
+      past: words.words.filter(word => word.level + 10 >= parseInt(levelId, 10) && word.level + 2 < parseInt(levelId, 10) ),
+      ancient: words.words.filter(word => word.level + 10 < parseInt(levelId, 10))
+    });
+    console.log(`level ${levelId}, current ${levelWords.current.length}, recent+past+ancient ${levelWords.recent.length + levelWords.past.length + levelWords.ancient.length}`);
+  }
 
   useEffect(() => {
     let animInterval: NodeJS.Timeout;
     if (!isJumping) {
       animInterval = setInterval(() => {
         setFrameIndex((prev) => (prev + 1) % RUN_FRAMES.length);
-      }, 200);
+      }, 100);
       if (speedChanging) {
         setTimeout(() => setSpeedChanging(false), 200);
       }
@@ -95,19 +119,24 @@ export default function Runner() {
       let jumpInterval = setInterval(() => {
         setFrameIndex(JUMP_FRAME);
         setRunnerY((prevY) => {
-          if (prevY > GROUND_LEVEL - JUMP_HEIGHT) {
+          if (prevY > currentWordHeight - FRAME_HEIGHT/2) {
             return prevY - GRAVITY * 4;
           } else {
             clearInterval(jumpInterval);
+            setTimeout(() => setIsWordActive(false), 50);
+            setTimeout(() => setFrameIndex(FALL_FRAME), 50);
             let fallInterval = setInterval(() => {
               setRunnerY((prevY) => {
-                if (prevY < GROUND_LEVEL) {
+                if (prevY < BASELINE_Y - FRAME_HEIGHT/2) {
                   return prevY + GRAVITY;
                 } else {
                   clearInterval(fallInterval);
                   setScore((prevScore) => prevScore + 1);
+                  if (score % 5 === 0) {
+                    setCurrentLevel((prevLevel) => ({ id: (parseInt(prevLevel.id) + 1).toString() }));
+                  }
                   setTimeout(() => setIsJumping(false), 1000);
-                  return GROUND_LEVEL;
+                  return BASELINE_Y - FRAME_HEIGHT/2;
                 }
               });
             }, 16);
@@ -116,7 +145,7 @@ export default function Runner() {
         });
       }, 16);
     }
-  }, [isJumping]);
+  }, [isJumping, currentWordHeight]);
 
   useEffect(() => {
     let moveInterval: NodeJS.Timeout;
@@ -124,11 +153,15 @@ export default function Runner() {
     let speed: number;
 
     const spawnWord = () => {
-      if (words.length === 0) return; // Ensure words array is not empty
+      const randomWord = getWeightedWord();
+      if (!randomWord) return;
+
       setWordX(SCREEN_WIDTH);
       setIsWordActive(true);
-      const randomWord = words[Math.floor(Math.random() * words.length)];
       setCurrentWord(randomWord?.word || 'Word Runner');
+      // Calculate random word height centered around BASELINE_Y
+      const randomOffset = -350 + (Math.random() * 2 - 1) * WORD_HEIGHT_VARIATION;
+      setCurrentWordHeight(BASELINE_Y + randomOffset - WORD_HEIGHT/2);
       wordClicked.current = false;
       speed = (1 + Math.random()) * BASE_WORD_SPEED;
       setGameSpeed(speed);
@@ -137,21 +170,64 @@ export default function Runner() {
       moveInterval = setInterval(() => {
         setWordX((prevX) => {
           if (prevX === null) return null;
-          if (prevX <= -WORD_WIDTH) {
+          if (prevX <= -WORD_WIDTH * 2) {
             clearInterval(moveInterval);
-            setIsWordActive(false);
+            if (isWordActive) {
+              setIsWordActive(false);
+              setShowWordMissed(true);
+            }
             setWordX(null);
             setIsJumping(false);
             scheduleNextSpawn();
             return null;
           }
           const newX = prevX - speed;
-          if (newX <= 100 && wordClicked.current) {
+          if (newX <= 320 && newX >= 300 && wordClicked.current) {
             handleJump();
           }
           return newX;
         });
-      }, 16);
+       }, 16);
+    };
+
+    const getWeightedWord = (): WordType | null => {
+      const currentLevelNum = parseInt(currentLevel.id, 10);
+      const { current, recent, past, ancient } = levelWords;
+      const allTheWords = [...current, ...recent, ...past, ...ancient];
+  
+      const weightedWords = allTheWords.map(word => {
+        let weight = 0;
+        const diff = currentLevelNum - word.level;
+  
+        if (diff === 0) {
+          weight = 1.0;
+        } else if (diff <= 2) {
+          weight = 0.5;
+        } else if (diff <= 10) {
+          weight = 0.1;
+        } else {
+          weight = 0.05;
+        }
+        return { ...word, weight };
+      });
+  
+      const totalWeight = weightedWords.reduce((sum, word) => sum + word.weight, 0);
+  
+      if (totalWeight === 0) {
+        return null;
+      }
+  
+      let random = Math.random() * totalWeight;
+      let currentWeight = 0;
+  
+      for (let word of weightedWords) {
+        currentWeight += word.weight;
+        if (random < currentWeight) {
+          return word;
+        }
+      }
+  
+      return null;
     };
 
     const scheduleNextSpawn = () => {
@@ -166,12 +242,36 @@ export default function Runner() {
       clearInterval(moveInterval);
       clearTimeout(spawnTimeout);
     };
-  }, [words]);
+  }, [words, levelWords, currentLevel]);
 
   useEffect(() => {
     const bgInterval = setInterval(() => {
-      setBackgroundX((prevX) => (prevX - 1) % SCREEN_WIDTH);
-      setForegroundX((prevX) => (prevX - gameSpeed) % (SCREEN_WIDTH * 10));
+      setBackPositions(({ x1, x2 }) => {
+        let newX1 = x1 - 1;
+        let newX2 = x2 - 1;
+  
+        // move whichever one is leftmost
+        if (newX1 <= 0 && newX2 <= 0 && newX1 <= newX2) {
+          newX1 = newX2 + SCREEN_WIDTH * 4;
+        } else if (newX2 <= 0 && newX1 <= 0 && newX2 <= newX1) {
+          newX2 = newX1 + SCREEN_WIDTH * 4;
+        }
+
+        return { x1: newX1, x2: newX2 };
+      });
+      setForePositions(({ x1, x2 }) => {
+        let newX1 = x1 - gameSpeed;
+        let newX2 = x2 - gameSpeed;
+  
+        // move whichever one is leftmost
+        if (newX1 <= 0 && newX2 <= 0 && newX1 <= newX2) {
+          newX1 = newX2 + SCREEN_WIDTH * 5;
+        } else if (newX2 <= 0 && newX1 <= 0 && newX2 <= newX1) {
+          newX2 = newX1 + SCREEN_WIDTH * 5;
+        }
+
+        return { x1: newX1, x2: newX2 };
+      });
     }, 16);
     return () => clearInterval(bgInterval);
   }, [gameSpeed]);
@@ -188,50 +288,120 @@ export default function Runner() {
 
   return (
     <View style={styles.gameContainer}>
-      <Image source={BACKGROUND_IMAGE} style={[styles.background, { left: backgroundX, width: SCREEN_WIDTH * 2, height: SCREEN_HEIGHT}]} />
-      <Image source={FOREGROUND_IMAGE} style={[styles.background, { left: foregroundX, width: SCREEN_WIDTH * 10, height: SCREEN_HEIGHT / 2}]} />
+      <View style={styles.backgroundContainer}>
+        <Image
+          key="bg1"
+          source={BACKGROUND_IMAGE}
+          style={[styles.background, {
+            left: backPositions.x1,
+            width: SCREEN_WIDTH * 4,
+            height: SCREEN_HEIGHT
+          }]}
+        />
+        <Image
+          key="bg2"
+          source={BACKGROUND_IMAGE}
+          style={[styles.background, {
+            left: backPositions.x2,
+            width: SCREEN_WIDTH * 4,
+            height: SCREEN_HEIGHT
+          }]}
+        />
+      </View>
+      <View style={styles.foregroundContainer}>
+        <Image
+          key="fg1"
+          source={FOREGROUND_IMAGE}
+          style={[styles.foreground, {
+            left: forePositions.x1,
+            width: SCREEN_WIDTH * 5,
+            height: SCREEN_HEIGHT
+          }]}
+        />
+        <Image
+          key="fg2"
+          source={FOREGROUND_IMAGE}
+          style={[styles.foreground, {
+            left: forePositions.x2,
+            width: SCREEN_WIDTH * 5,
+            height: SCREEN_HEIGHT
+          }]}
+        />
+      </View>
       <TouchableOpacity onPress={handleWordClick} style={styles.wordContainer}>
         <Text style={styles.gameWord}>{currentWord}</Text>
       </TouchableOpacity>
-      <View
-        style={[styles.character, {
-          top: runnerY,
-          width: FRAME_WIDTH,
-          height: FRAME_HEIGHT,
-        }]}
+      <View style={[styles.character, {
+        top: runnerY,
+        width: FRAME_WIDTH,
+        height: FRAME_HEIGHT,
+      }]}
       >
         <Image
           source={SPRITE_SHEET}
           style={{
-        height: FRAME_HEIGHT,
-        resizeMode: "cover",
-        transform: [{ translateX: -frameIndex * FRAME_WIDTH }], // Shift sprite sheet left
+            height: FRAME_HEIGHT,
+            resizeMode: "cover",
+            transform: [{ translateX: -frameIndex * FRAME_WIDTH }],
           }}
         />
         {speedChanging && (
           <Image
-        source={SPEED_CHANGE}
-        style={{
-          position: "absolute",
-          width: FRAME_WIDTH,
-          height: FRAME_HEIGHT,
-          top: 0,
-          left: 0,
-          resizeMode: "cover",
-        }}
+            source={SPEED_CHANGE}
+            style={{
+              position: "absolute",
+              width: FRAME_WIDTH,
+              height: FRAME_HEIGHT,
+              top: 0,
+              left: 0,
+              resizeMode: "cover",
+            }}
           />
         )}
       </View>
-      
-      {/* Word (Word as Text) */}
+
       {isWordActive && wordX !== null && (
         <Text
-          style={[styles.movingWord, {left: wordX, top: JUMP_HEIGHT + SCREEN_HEIGHT - GROUND_LEVEL }]}>
-          {currentWord}
+          style={[styles.movingWord, { left: wordX, top: currentWordHeight }]}>
+          {currentWord || ''}
         </Text>
       )}
-      <Text style={styles.score}>Score: {score}</Text>
-      {words.length === 0 && <Text style={styles.errorText}>No words available for this level!</Text>}
-    </View>
+      <Text style={styles.score}>Score: {score} Level: {String(currentLevel.id ?? '1')}</Text>
+    {/* Pause button */}
+          <TouchableOpacity 
+            style={styles.pauseButton} 
+            onPress={() => setShowPauseMenu(true)}
+          >
+            <Text style={styles.pauseButtonText}>Pause</Text>
+          </TouchableOpacity>
+    
+          {/* Modals */}
+          <PauseMenuModal
+            visible={showPauseMenu}
+            onResume={() => setShowPauseMenu(false)}
+            onRestart={() => {
+              setShowPauseMenu(false);
+              // Add restart logic here
+            }}
+            onReviewMode={() => {
+              setShowPauseMenu(false);
+              // Add review mode logic here
+            }}
+            onProfileSelect={() => {
+              setShowPauseMenu(false);
+              // Add navigation to profile selection
+            }}
+            onGameSelect={() => {
+              setShowPauseMenu(false);
+              // Add navigation to game selection
+            }}
+          />
+    
+          <WordMissedModal
+            visible={showWordMissed}
+            word={currentWord}
+            onContinue={() => setShowWordMissed(false)}
+          />
+        </View>
   );
 };

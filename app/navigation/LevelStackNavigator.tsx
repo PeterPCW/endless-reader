@@ -2,7 +2,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationIndependentTree } from '@react-navigation/core';
-import { NavigationProp } from '@react-navigation/native';
 
 export type RootTabParamList = {
   Practice: undefined;
@@ -13,11 +12,11 @@ export type RootTabParamList = {
   Snake: undefined;
   Invaders: undefined;
   Rampage: undefined;
+  WordsShower: undefined;
 };
 import Practice from '@/app/screens/(tabs)/Practice';
-import Games from '@/app/screens/(tabs)/Games';
+import Games from '@/app/screens/Games';
 import ReadyToRead from '@/app/screens/(tabs)/ReadyToRead';
-import Complete from '@/app/screens/(tabs)/Complete';
 
 const Tab = createBottomTabNavigator();
 
@@ -60,13 +59,6 @@ export default function LevelStackNavigator() {
           name="ReadyToRead"
           component={() => <ReadyToRead />}
           options={{ title: 'Ready to Read' }}
-        />
-
-        {/* Completion reward screen*/}
-        <Tab.Screen
-          name="Complete"
-          component={Complete}
-          options={{ title: 'Complete' }}
         />
       </Tab.Navigator>
     </NavigationIndependentTree>

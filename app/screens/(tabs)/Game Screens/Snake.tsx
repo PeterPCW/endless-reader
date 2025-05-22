@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-nati
 import { levels, WordType } from '@/app/assets/data/levels';
 import { LevelContext } from '@/app/screens/Levels';
 
-const GRID_SIZE = 15;
+const GRID_SIZE = 6;
 const CELL_SIZE = Dimensions.get('window').width / GRID_SIZE;
 const MOVE_INTERVAL = 300; // ms between moves
 const WORD_TIMEOUT = 5000; // ms before timeout
@@ -12,10 +12,10 @@ type Position = { x: number; y: number };
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 
 export default function Snake() {
-  const [snakePos, setSnakePos] = useState<Position>({ x: 5, y: 5 });
-  const [foodPos, setFoodPos] = useState<Position>({ x: 10, y: 10 });
+  const [snakePos, setSnakePos] = useState<Position>({ x: 3, y: 3 });
+  const [foodPos, setFoodPos] = useState<Position>({ x: 5, y: 0 });
   const [direction, setDirection] = useState<Direction>('RIGHT');
-  const [currentWord, setCurrentWord] = useState<string>('');
+  const [currentWord, setCurrentWord] = useState<string>('Start');
   const [moveQueue, setMoveQueue] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [gameState, setGameState] = useState<'WAITING' | 'MOVING' | 'TIMEOUT'>('WAITING');
@@ -28,7 +28,9 @@ export default function Snake() {
       const levelData = levels[selectedLevel.id];
       if (levelData) {
         setWords(levelData.words);
-        spawnNewWord();
+        if (currentWord === 'Start') {
+          spawnNewWord();
+        }
       }
     }
   }, [selectedLevel]);
@@ -67,7 +69,6 @@ export default function Snake() {
     if (words.length === 0) return;
     const randomWord = words[Math.floor(Math.random() * words.length)];
     setCurrentWord(randomWord.word);
-    spawnNewFood();
   };
 
   const spawnNewFood = () => {
@@ -84,6 +85,7 @@ export default function Snake() {
     // Check if snake reached food
     if (newPos.x === foodPos.x && newPos.y === foodPos.y) {
       setScore(prev => prev + 1);
+      spawnNewFood();
     }
   };
 
@@ -100,22 +102,36 @@ export default function Snake() {
 
     // Otherwise pick best available move
     if (Math.abs(dx) > Math.abs(dy)) {
-      return dx > 0 
-        ? { x: snakePos.x + 1, y: snakePos.y }
-        : { x: snakePos.x - 1, y: snakePos.y };
+      if (dx > 0) {
+        setDirection('RIGHT');
+        return { x: snakePos.x + 1, y: snakePos.y }
+      } else {
+        setDirection('LEFT');
+        return { x: snakePos.x - 1, y: snakePos.y }
+      }
     } else {
-      return dy > 0
-        ? { x: snakePos.x, y: snakePos.y + 1 }
-        : { x: snakePos.x, y: snakePos.y - 1 };
+      if (dy < 0) {
+        setDirection('UP');
+        return { x: snakePos.x, y: snakePos.y - 1 }
+      } else { 
+        setDirection('DOWN');
+        return { x: snakePos.x, y: snakePos.y + 1 }
+      }
     }
   };
 
   const handleWordClick = () => {
     if (gameState !== 'WAITING') return;
     
+    // Handle initial "Start" click
+    if (currentWord === 'Start') {
+      spawnNewWord();
+      return;
+    }
+    
     // Count syllables (using parts length as proxy)
     const currentWordData = words.find(w => w.word === currentWord);
-    const syllables = currentWordData?.parts.length || 1;
+    const syllables = currentWordData?.syllables || 1;
     
     setMoveQueue(syllables);
     setGameState('MOVING');

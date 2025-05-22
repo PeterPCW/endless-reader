@@ -11,7 +11,7 @@ export default function SpeechButton({ word }: { readonly word: string }) {
     Speech.speak(word, { rate: 0.001 })
     
     // 5️⃣ Pause again for response
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     
     // 6️⃣ Speak the word at full speed
     Speech.speak(word, { rate: 0.8 });
@@ -22,7 +22,7 @@ export default function SpeechButton({ word }: { readonly word: string }) {
       <TouchableOpacity
         onPress={speakSyllables}>
         <View pointerEvents="none">
-          <Text style={styles.speechButton}>🔊</Text>
+          <Text style={styles.buttonStyle}>🔊</Text>
         </View>
       </TouchableOpacity>
     </View>

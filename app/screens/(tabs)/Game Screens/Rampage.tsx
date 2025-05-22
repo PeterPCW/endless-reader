@@ -43,7 +43,7 @@ export default function Rampage() {
   }, [selectedLevel]);
 
   const initializeBuildings = (words: WordType[]) => {
-    const buildingCount = Math.min(5, words.length);
+    const buildingCount = words.length;
     const newBuildings = Array.from({ length: buildingCount }, (_, i) => ({
       id: `building-${i}`,
       word: words[i].word,

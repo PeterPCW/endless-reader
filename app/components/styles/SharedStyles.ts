@@ -1,19 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 export const sharedStyles = StyleSheet.create({
-  practiceContainer: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
+  // Common card style
   listContainer: {
     gap: 15,
   },
-  wordCard: {
+  // Common card style
+  cardStyle: {
     backgroundColor: '#f3f4f6',
     padding: 20,
     borderRadius: 10,
@@ -30,23 +23,8 @@ export const sharedStyles = StyleSheet.create({
     color: '#1f2937',
     marginBottom: 10,
   },
-  dotContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    backgroundColor: '#d1d5db',
-    borderRadius: 5,
-  },
-  completedDot: {
-    backgroundColor: '#6366f1',
-  },
-  audioButton: {
-    width: 60, // Larger button size
-    height: 60,
+  // Common button style
+  buttonStyle: {
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30, // Circular button
@@ -58,13 +36,6 @@ export const sharedStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 20,
-  },
-  statCard: {
-    backgroundColor: '#f3f4f6',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    minWidth: 140,
   },
   statValue: {
     fontSize: 32,
@@ -82,18 +53,6 @@ export const sharedStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center'
-  },
-  newProfileTitle: {
-    fontSize: 22,
-    marginBottom: 15,
-    fontWeight: '600'
-  },
   subtitle: {
     fontSize: 16,
     marginBottom: 10
@@ -110,13 +69,6 @@ export const sharedStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15
-  },
-  avatarButton: {
-    marginHorizontal: 5,
-    padding: 5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5
   },
   selectedAvatar: {
     borderColor: 'blue',
@@ -205,7 +157,7 @@ export const sharedStyles = StyleSheet.create({
   },
   movingWord: {
     position: 'absolute',
-    fontSize: 40,
+    fontSize: 60,
     fontWeight: 'bold',
     color: 'red',
     textAlign: 'center', // Ensure proper alignment
@@ -218,11 +170,31 @@ export const sharedStyles = StyleSheet.create({
   },
   background: {
     position: 'absolute',
+    resizeMode: 'stretch'
+  },
+  foreground: {
+    position: 'absolute',
     resizeMode: 'stretch',
-    bottom: '0%', // Converted from 0
+    bottom: '0%'
+  },
+  backgroundContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '50%',
+    overflow: 'hidden',
+  },
+  foregroundContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    height: '50%',
+    overflow: 'hidden',
   },
   sentence: {
-    fontSize: 60,
+    fontSize: 80,
     color: 'white',
   },
   sentenceContainer: {
@@ -240,91 +212,102 @@ export const sharedStyles = StyleSheet.create({
     top: '50%', // Converted from an approximate center position
     left: '10%', // Converted from an approximate left position
   },
-  practiceWord: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  wordTextContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  practiceWordText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    textAlign: 'center',
-  },
-  wordPartWrapper: {
-    position: 'relative', // Ensure the overlay is positioned relative to the text
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  wordPartsContainer: {
-    flexDirection: 'row', // Lay out parts horizontally
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1, // Allow it to take up available space
-  },
-  wordPart: {
-    width: 40, // Fixed width for each part
-    height: 60, // Fixed height for each part
-    marginHorizontal: 2, // Small spacing between parts
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  wordPartTextWrapper: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  wordPartText: {
-    fontSize: 60, // Font size for the text inside parts
-    fontWeight: 'bold',
-    color: '#f3f4f6', // Default off-white
-    textAlign: 'center',
-  },
   mainText: {
     fontSize: 32, // Adjust font size for word parts
     fontWeight: 'bold',
     color: '#333333', // Default off-white
     textAlign: 'center',
   },
-  practiceWordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#858585', // Dark gray background
-    paddingVertical: 20, // Keep vertical padding
-    paddingLeft: 20, // Keep left padding for space before word
-    paddingRight: 10, // Reduce right padding to be closer to button
-    borderRadius: 10,
-    marginBottom: 20,
-    position: 'relative', // Needed for absolute positioning of the overlay
+  container: {
+    flex: 1,
+    padding: 16,
   },
-  panOverlay: {
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  levelInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 8,
+    width: '40%',
+  },
+  filterButton: {
+    backgroundColor: '#ddd',
+    padding: 8,
+    borderRadius: 4,
+    width: '55%',
+    alignItems: 'center',
+  },
+  filterButtonActive: {
+    backgroundColor: '#4CAF50',
+  },
+  filterButtonText: {
+    color: '#333',
+  },
+  listsContainer: {
+    paddingBottom: 16,
+  },
+  wordItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  wordsText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  levelText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  pauseButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 10,
+    borderRadius: 5,
+  },
+  pauseButtonText: {
+    color: 'white',
+  },
+  overlay: {
     position: 'absolute',
     top: 0,
     left: 0,
-    right: 0, // Cover the entire parent container
+    right: 0,
     bottom: 0,
-    backgroundColor: 'transparent', // Make it invisible
-    zIndex: 1, // Ensure it's above the text container but below the button if needed
-  },
-  speechButtonWrapper: {
-    justifyContent: 'center', // Center vertically
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10, // Push the button slightly left
   },
-  speechButton: {
-    fontSize: 40,
-    textAlign: 'right',
-    alignContent: 'center'
-  }
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: 'red',
+  },
+  detailText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  button: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#ddd',
+    borderRadius: 5,
+  },
+  buttonText: {
+    textAlign: 'center',
+  },
 });

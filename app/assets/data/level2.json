@@ -3,13 +3,20 @@
   "words": [
     {
       "word": "thought",
+      "syllables": 1,
       "parts": ["th", "ough", "t"],
-      "voiced": ["w", "v", "v"]
+      "voiced": ["w", "v", "v"],
+      "length": ["l", "l", "s"],
+      "source": ["θ.mp3", "aw.mp3", "t.mp3"]
     },
     {
       "word": "through",
+      "syllables": 1,
       "parts": ["th", "r", "ough"],
-      "voiced": ["w", "v", "v"]
+      "voiced": ["w", "v", "v"],
+      "length": ["l", "l", "l"],
+      
+      "source": ["ð.mp3", "r.mp3", "ew.mp3"]
     }
   ],
   "sentences": [

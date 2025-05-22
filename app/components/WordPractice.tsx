@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemedView } from '@/app/components/ThemedView';
+import { View } from 'react-native';
 import SpeechButton from '@/app/components/SpeechButton'
 
 interface WordPracticeProps {
@@ -10,7 +10,7 @@ interface WordPracticeProps {
 
 export default function WordPractice({ visible, word, onClose }: WordPracticeProps) {
   return (
-    <ThemedView>
+    <View>
       <div style={{ position: 'relative' }}>
       <button
         onClick={onClose}
@@ -28,6 +28,6 @@ export default function WordPractice({ visible, word, onClose }: WordPracticePro
       </button>
       <SpeechButton word={word} />
       </div>
-    </ThemedView>
+    </View>
   );
 }

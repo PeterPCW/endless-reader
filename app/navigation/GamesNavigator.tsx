@@ -1,11 +1,12 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationIndependentTree } from '@react-navigation/core';
-import Games from '@/app/screens/(tabs)/Games';
+import Games from '@/app/screens/Games';
 import Runner from '@/app/screens/(tabs)/Game Screens/Runner';
 import Snake from '@/app/screens/(tabs)/Game Screens/Snake';
 import Invaders from '@/app/screens/(tabs)/Game Screens/Invaders';
 import Rampage from '@/app/screens/(tabs)/Game Screens/Rampage';
+import WordsShower from '../screens/(tabs)/Game Screens/wordsShower';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export default function GamesNavigator() {
         <Stack.Screen name="Snake" component={Snake} options={{ headerShown: true }} />
         <Stack.Screen name="Invaders" component={Invaders} options={{ headerShown: true }} />
         <Stack.Screen name="Rampage" component={Rampage} options={{ headerShown: true }} />
+        <Stack.Screen name="WordsShower" component={WordsShower} options={{ headerShown: true }} />
       </Stack.Navigator>
     </NavigationIndependentTree>
   );

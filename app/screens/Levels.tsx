@@ -1,24 +1,15 @@
 import React, { useEffect, useState, useContext, createContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { levelsData, LevelMetaData } from '@/app/assets/data/levels';
+import { levelsData, LevelMetaData, LevelData } from '@/app/assets/data/levels';
 import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
-
+import type { RootStackParamList } from '@/app/screens/Games';
 export interface Level extends LevelMetaData {
   title: string;
 }
 
-export type RootStackParamList = {
-  ProfileSelection: undefined;
-  Levels: undefined;
-  Explore: undefined;
-  LevelStack: undefined;
-  Profile: undefined;
-  GamesNavigator: { screen: 'Runner' | 'Snake' | 'Invaders' | 'Rampage' };
-};
-
 type LevelContextType = {
-  selectedLevel: LevelMetaData | null;
+  selectedLevel: LevelData | null;
   setSelectedLevel: (level: LevelMetaData) => void;
 };
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useRoute, RouteProp } from '@react-navigation/native';
-import { ThemedText } from '@/app/components/ThemedText';
-import { TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { TouchableOpacity, Text } from 'react-native';
 import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
 import { levels } from '@/app/assets/data/levels';
+import { LevelContext } from '@/app/screens/Levels'; 
 
 type SentenceType = {
   sentence: string;
@@ -15,28 +14,48 @@ type ReadyToReadRouteParams = {
   };
 };
 
-export default function ReadyToRead() {
-  const route = useRoute<RouteProp<ReadyToReadRouteParams>>();
-  const levelNumber = route.params?.level || 1; // Default to level 1
+type WordType = {
+  word: string;
+  parts: string[];
+  voiced: string[];
+};
 
+interface LevelData {
+  id: string;
+  words: WordType[];
+  sentences: string[];
+}
+
+export default function ReadyToRead() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [sentences, setSentences] = useState<SentenceType[]>([]);
   const [sentence, setSentence] = useState('');
+  const { selectedLevel } = useContext(LevelContext);
 
   useEffect(() => {
-    initializeReadyToRead();
-  }, [levelNumber]);
-
-  const initializeReadyToRead = async () => {
-    try {
-      const levelData: { id: string; words: { word: string; parts: string[], voiced: string[] }[]; sentences: string[] } | undefined = levels[levelNumber.toString()];
-      setSentences(levelData?.sentences.map((sentence) => ({ sentence })));
-      setSentence(levelData?.sentences[0] || '');
-    } catch (error) {
-      console.error('Error loading level data:', error);
-    }
-  };
+      if (selectedLevel) {
+        initialize(selectedLevel.id);
+      }
+    }, [selectedLevel]);
+  
+    const initialize = async (levelId: string) => {
+      try {
+        const levelData: LevelData | undefined = levels[levelId];
+        if (levelData) {
+          setSentences(levelData?.sentences.map((sentence) => ({ sentence })));
+          setSentence(levelData?.sentences[0] || '');
+        } else {
+          console.error(`Level data not found for id: ${levelId}`);
+          setSentences([]);
+          setSentence('');
+        }
+      } catch (error) {
+        console.error('Error loading level data:', error);
+        setSentences([]);
+        setSentence('');
+      }
+    };
 
   const handleSentenceClick = () => {
     const words = sentence.split(' ');
@@ -56,22 +75,21 @@ export default function ReadyToRead() {
 
   return (
     <TouchableOpacity onPress={handleSentenceClick} style={styles.sentenceContainer}>
-      <ThemedText style={{ fontSize: 24 }}>
+      <Text style={{ fontSize: 48 }}>
         {sentence.split(' ').map((word, wordIndex) => (
-          <ThemedText
+          <Text
             key={wordIndex}
             style={[
               styles.sentence,
               {
-                fontWeight: wordIndex === currentWordIndex ? 'bold' : 'normal',
-                fontSize: wordIndex === currentWordIndex ? 36 : 24, // Increase font size for the current word
+                fontSize: wordIndex === currentWordIndex ? 36 : 24
               },
             ]}
           >
             {word}{' '}
-          </ThemedText>
+          </Text>
         ))}
-      </ThemedText>
+      </Text>
     </TouchableOpacity>
   );
 }

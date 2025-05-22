@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, Text, FlatList, PanResponder, LayoutChangeEvent, PanResponderInstance } from 'react-native'; // Added PanResponderInstance
-import { sharedStyles as styles } from '@/app/components/styles/SharedStyles';
+import { View, Text, FlatList, PanResponder, LayoutChangeEvent, PanResponderInstance, StyleSheet } from 'react-native'; // Added PanResponderInstance
 import SpeechButton from '@/app/components/SpeechButton';
 import { levels } from '@/app/assets/data/levels';
 import { LevelContext } from '@/app/screens/Levels';
@@ -138,11 +137,11 @@ export default function Practice() {
     };
 
     return (
-      <View style={styles.practiceWordContainer}>
+      <View style={localStyles.practiceWordContainer}>
         {/* New Wrapper View for interactive area */}
         <View style={{ flex: 1, position: 'relative' }}>
           {/* Container for the actual text parts */}
-          <View style={styles.wordPartsContainer}>
+          <View style={localStyles.wordPartsContainer}>
             <Text onLayout={handleTextLayout}>
               {item.parts.map((part, index) => {
                 let color = '#f3f4f6'; // Default off-white (inactive)
@@ -153,7 +152,7 @@ export default function Practice() {
                   color = '#333333'; // Black for completed parts
                 }
                 return (
-                  <Text key={`${item.word}-${part}-${index}`} style={[styles.wordPartText, { color }]}>
+                  <Text key={`${item.word}-${part}-${index}`} style={[localStyles.wordPartText, { color }]}>
                     {part}
                   </Text>
                 );
@@ -163,14 +162,14 @@ export default function Practice() {
 
           {/* Absolutely Positioned Overlay for PanResponder */}
           <View
-            style={styles.panOverlay}
+            style={localStyles.panOverlay}
             {...responder.panHandlers}
             pointerEvents="box-only"
           />
         </View>
 
         {/* Adjusted SpeechButton Wrapper */}
-        <View style={styles.speechButtonWrapper}>
+        <View style={localStyles.speechButtonWrapper}>
           <SpeechButton word={item.word} />
         </View>
       </View>
@@ -179,8 +178,8 @@ export default function Practice() {
 
   // Main component return
   return (
-    <View style={styles.practiceContainer}>
-      <Text style={styles.title}>
+    <View style={localStyles.practiceContainer}>
+      <Text style={localStyles.title}>
         Practice Words - {selectedLevel?.name || 'Select Level'}
       </Text>
       {words.length === 0 ? (
@@ -190,7 +189,7 @@ export default function Practice() {
           data={words}
           renderItem={renderWord}
           keyExtractor={(item) => item.word}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={localStyles.listContainer}
           // Optimization: Prevent unnecessary re-renders of list items if item data hasn't changed
           extraData={wordStates} // Re-render items when wordStates changes
         />
@@ -198,3 +197,56 @@ export default function Practice() {
     </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  practiceContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  listContainer: {
+    gap: 15,
+  },
+  practiceWordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#858585', // Dark gray background
+    paddingVertical: 20, // Keep vertical padding
+    paddingLeft: 20, // Keep left padding for space before word
+    paddingRight: 10, // Reduce right padding to be closer to button
+    borderRadius: 10,
+    marginBottom: 20,
+    position: 'relative', // Needed for absolute positioning of the overlay
+  },
+  wordPartsContainer: {
+    flexDirection: 'row', // Lay out parts horizontally
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1, // Allow it to take up available space
+  },
+  wordPartText: {
+    fontSize: 60, // Font size for the text inside parts
+    fontWeight: 'bold',
+    color: '#f3f4f6', // Default off-white
+    textAlign: 'center',
+  },
+  panOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0, // Cover the entire parent container
+    bottom: 0,
+    backgroundColor: 'transparent', // Make it invisible
+    zIndex: 1, // Ensure it's above the text container but below the button if needed
+  },
+  speechButtonWrapper: {
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center',
+    marginRight: 10, // Push the button slightly left
+  },
+});

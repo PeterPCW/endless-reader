@@ -2,9 +2,9 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationIndependentTree } from '@react-navigation/core';
 import ProfileSelection from '@/app/screens/ProfileSelection';
-import Levels from '@/app/screens/Levels';
+import Games from '@/app/screens/Games';
 import LevelStackNavigator from '@/app/navigation/LevelStackNavigator';
-import Complete from '@/app/screens/(tabs)/Complete';
+import WordsShower from '@/app/screens/(tabs)/Game Screens/wordsShower';
 import Profile from '@/app/screens/Profile';
 import GamesNavigator from '@/app/navigation/GamesNavigator';
 import Runner from '@/app/screens/(tabs)/Game Screens/Runner';
@@ -42,8 +42,8 @@ function AppNavigator() {
 
       {/* 2. Level Selection */}
       <Stack.Screen
-        name="Levels"
-        component={Levels}
+        name="Games"
+        component={Games}
         options={{ headerShown: true }}
       />
 
@@ -89,6 +89,11 @@ function AppNavigator() {
         name="Rampage"
         component={() => <Rampage />}
         options={{ title: 'Rampage' }}
+      />
+      <Stack.Screen
+        name="WordsShower"
+        component={() => <WordsShower />}
+        options={{ title: 'WordsShower' }}
       />
     </Stack.Navigator>
   );
