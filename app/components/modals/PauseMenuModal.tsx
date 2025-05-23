@@ -4,7 +4,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 interface PauseMenuModalProps {
   visible: boolean;
   onResume: () => void;
-  onRestart: () => void;
   onReviewMode: () => void;
   onProfileSelect: () => void;
   onGameSelect: () => void;
@@ -13,7 +12,6 @@ interface PauseMenuModalProps {
 export default function PauseMenuModal({
   visible,
   onResume,
-  onRestart,
   onReviewMode,
   onProfileSelect,
   onGameSelect
@@ -27,10 +25,6 @@ export default function PauseMenuModal({
         
         <TouchableOpacity style={styles.button} onPress={onResume}>
           <Text style={styles.buttonText}>Resume</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={onRestart}>
-          <Text style={styles.buttonText}>Restart Level</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={onReviewMode}>
